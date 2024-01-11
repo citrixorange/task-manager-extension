@@ -15,6 +15,26 @@ const App = () => {
   
     const handleTaskFormChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === 'deadline') {
+
+            const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+
+            if (!dateTimeRegex.test(value)) {
+                alert('Invalid date and time format. Please use YYYY-MM-DDTHH:mm');
+                return;
+            }
+
+            const selectedDate = new Date(value);
+            const currentDate = new Date();
+
+            if (selectedDate <= currentDate) {
+                // Display an error message or handle the date being not greater than the current date
+                alert('Please select a date and time greater than the current date.');
+                return;
+            }
+        }
+
         setTaskForm((prevForm) => ({ ...prevForm, [name]: value }));
     };
   
@@ -58,7 +78,7 @@ const App = () => {
                 <label>
                     Deadline:
                     <input
-                        type="text"
+                        type="datetime-local"
                         name="deadline"
                         value={taskForm.deadline}
                         onChange={handleTaskFormChange}
