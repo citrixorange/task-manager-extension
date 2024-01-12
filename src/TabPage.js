@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const App = () => {
+const TabPage = () => {
     const [tasks, setTasks] = useState([]);
     const [taskForm, setTaskForm] = useState({
         title: '',
@@ -8,10 +8,6 @@ const App = () => {
         deadline: '',
         status: 'In Progress',
     });
-  
-    const handleToggleMode = () => {
-        chrome.tabs.create({'url': "index.html"})
-    };
   
     const handleTaskFormChange = (e) => {
         const { name, value } = e.target;
@@ -53,9 +49,6 @@ const App = () => {
     return (
         <div className="App">
             <h1>Task Manager Extension</h1>
-            <button onClick={handleToggleMode}>
-                Toogle Tab Mode
-            </button>
             <div className="taskForm">
                 <h2>Task Registration</h2>
                 <label>
@@ -105,4 +98,4 @@ const App = () => {
     );
 };
   
-export default App;
+export default TabPage;

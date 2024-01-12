@@ -4,10 +4,13 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: './src/index.js',
+    entry: {
+        pop: './src/pop.js',
+        tab: './src/tab.js'
+    },
     output: {
         path: path.resolve(__dirname, 'build'),
-        filename: 'bundle.js',
+        filename: '[name].bundle.js',
     },
     module: {
         rules: [
@@ -22,7 +25,14 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './public/index.html',
+            template: './public/pop.html',
+            filename: 'pop.html',
+            chunks: ['pop'],
+        }),
+        new HtmlWebpackPlugin({
+            template: './public/tab.html',
+            filename: 'tab.html',
+            chunks: ['tab'],
         }),
         new CopyWebpackPlugin({
             patterns: [
