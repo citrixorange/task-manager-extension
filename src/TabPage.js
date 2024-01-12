@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './css/TabPage.css';
 
 const TabPage = () => {
     const [tasks, setTasks] = useState([]);
@@ -45,9 +46,73 @@ const TabPage = () => {
             status: 'In Progress',
         });
     };
+
+    const organizeTasksByStatus = () => {
+        const organizedTasks = {
+            'In Progress': [],
+            'Done': [],
+            'Miss': [],
+            'Canceled': [],
+        };
+
+        tasks.forEach((task) => {
+            organizedTasks[task.status].push(task);
+        });
+
+        return organizedTasks;
+    };
+
+    const renderTasksInColumns = () => {
+        const organizedTasks = organizeTasksByStatus();
+
+        return (
+            <div className="taskColumns">
+                {Object.entries(organizedTasks).map(([status, tasksInStatus]) => (
+                    <div key={status} className="taskColumn">
+                        <h3>{status}</h3>
+                        <div className="tasksInStatus">
+                            {tasksInStatus.map((task) => (
+                                <div key={task.id} className="taskItem">
+                                    <strong>{task.title}</strong>
+                                    <p>{task.description}</p>
+                                    <p>Deadline: {task.deadline}</p>
+                                    <p>Status: {task.status}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    useEffect(() => {
+        const loadFromStorage = async () => {
+            try {
+                const result = await new Promise((resolve) => {
+                    chrome.storage.local.get(['tasks'], (data) => {
+                        resolve(data.tasks);
+                    });
+                });
+
+                setTasks(result);
+
+            } catch (error) {
+                alert('Error to load persisted data');
+            }
+        };
+
+        loadFromStorage();
+    }, []);
+
+    useEffect(() => {
+        chrome.storage.local.set({
+            tasks: tasks
+        });
+    }, [tasks]);
   
     return (
-        <div className="App">
+        <div className="TabPage">
             <h1>Task Manager Extension</h1>
             <div className="taskForm">
                 <h2>Task Registration</h2>
@@ -93,6 +158,9 @@ const TabPage = () => {
                 <button onClick={handleRegisterTask}>
                     Register Task
                 </button>
+            </div>
+            <div className="taskList">
+                {renderTasksInColumns()}
             </div>
         </div>
     );

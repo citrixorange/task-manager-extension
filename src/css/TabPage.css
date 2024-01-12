@@ -1,0 +1,24 @@
+.TabPage {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+}
+
+.taskColumns {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.statusColumn {
+    margin-right: 20px;
+}
+
+.tasksInStatus {
+    display: flex;
+    flex-direction: column;
+}
+
+.taskItem {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
