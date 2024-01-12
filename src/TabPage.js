@@ -1,5 +1,41 @@
 import React, { useState, useEffect } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import './css/TabPage.css';
+
+
+const Task = ({ task, onMoveTask }) => {
+
+    const [{ isDragging }, drag] = useDrag({
+        type: 'TASK',
+        item: { id: task.id, status: task.status },
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging(),
+        }),
+    });
+
+    const [, drop] = useDrop({
+        accept: 'TASK',
+        hover: (draggedItem) => {
+            if (draggedItem.status !== task.status) {
+                onMoveTask(draggedItem.id, task.status);
+            }
+        },
+    });
+
+    return (
+        <div
+            ref={(node) => drag(drop(node))}
+            style={{ opacity: isDragging ? 0.5 : 1 }}
+            className="taskItem"
+        >
+            <strong>{task.title}</strong>
+            <p>{task.description}</p>
+            <p>Deadline: {task.deadline}</p>
+            <p>Status: {task.status}</p>
+        </div>
+    );
+};
 
 const TabPage = () => {
     const [tasks, setTasks] = useState([]);
@@ -47,6 +83,14 @@ const TabPage = () => {
         });
     };
 
+    const handleMoveTask = (taskId, newStatus) => {
+        setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === taskId ? { ...task, status: newStatus } : task
+            )
+        );
+    };
+
     const organizeTasksByStatus = () => {
         const organizedTasks = {
             'In Progress': [],
@@ -72,12 +116,7 @@ const TabPage = () => {
                         <h3>{status}</h3>
                         <div className="tasksInStatus">
                             {tasksInStatus.map((task) => (
-                                <div key={task.id} className="taskItem">
-                                    <strong>{task.title}</strong>
-                                    <p>{task.description}</p>
-                                    <p>Deadline: {task.deadline}</p>
-                                    <p>Status: {task.status}</p>
-                                </div>
+                                <Task key={task.id} task={task} onMoveTask={handleMoveTask}/>
                             ))}
                         </div>
                     </div>
