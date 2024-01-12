@@ -36,12 +36,15 @@ const PopUpPage = () => {
         }
 
         setTaskForm((prevForm) => ({ ...prevForm, [name]: value }));
+        
     };
   
     const handleRegisterTask = () => {
         // Implement task registration logic
         const newTask = { ...taskForm, id: tasks.length + 1 };
+
         setTasks((prevTasks) => [...prevTasks, newTask]);
+
         setTaskForm({
             title: '',
             description: '',
@@ -49,6 +52,31 @@ const PopUpPage = () => {
             status: 'In Progress',
         });
     };
+
+    useEffect(() => {
+        const loadFromStorage = async () => {
+            try {
+                const result = await new Promise((resolve) => {
+                    chrome.storage.local.get(['tasks'], (data) => {
+                        resolve(data.tasks);
+                    });
+                });
+
+                setTasks(result);
+
+            } catch (error) {
+                alert('Error to load persisted data');
+            }
+        };
+
+        loadFromStorage();
+    }, []);
+
+    useEffect(() => {
+        chrome.storage.local.set({
+            tasks: tasks
+        });
+    }, [tasks]);
   
     return (
         <div className="App">
@@ -100,6 +128,16 @@ const PopUpPage = () => {
                 <button onClick={handleRegisterTask}>
                     Register Task
                 </button>
+            </div>
+            <div className="taskList">
+                {tasks.map((task) => (
+                    <div key={task.id} className="taskItem">
+                        <strong>{task.title}</strong>
+                        <p>{task.description}</p>
+                        <p>Deadline: {task.deadline}</p>
+                        <p>Status: {task.status}</p>
+                    </div>
+                ))}
             </div>
         </div>
     );
